@@ -28,7 +28,10 @@ const MainNavigation = props => {
       </SideDrawer>
 
       <MainHeader>
-        <button className="main-navigation__menu-btn" onClick={openDrawerHandler}>
+        <button
+          className="main-navigation__menu-btn"
+          onClick={openDrawerHandler}
+        >
           <span />
           <span />
           <span />
@@ -36,7 +39,7 @@ const MainNavigation = props => {
         <h1 className="main-navigation__title">
           <Link to="/">YourPlaces</Link>
         </h1>
-        <nav>
+        <nav className="main-navigation__header-nav">
           <NavLinks />
         </nav>
       </MainHeader>
