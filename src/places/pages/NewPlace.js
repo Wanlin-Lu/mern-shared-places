@@ -34,11 +34,11 @@ const NewPlace = () => {
     inputs: {
       title: {
         value: "",
-        isValid: false,
+        isValid: false
       },
       description: {
         value: "",
-        isValid: false,
+        isValid: false
       }
     },
     isValid: false
@@ -48,8 +48,13 @@ const NewPlace = () => {
     dispatch({type: 'INPUT_CHANGE', value: value, isValid: isValid, inputId: id})
   }, [])
 
+  const placeSubmitHandler = event => {
+    event.preventDefault();
+    console.log(formState.inputs); // send this to the backend!
+  }
+
   return (
-    <form className="place-form">
+    <form className="place-form" onSubmit={placeSubmitHandler}>
       <Input
         id="title"
         element="input"
