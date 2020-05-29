@@ -7,8 +7,7 @@ export const useHttpClient = () => {
   const activeHttpRequests = useRef([]);
 
   const sendRequest = useCallback(
-    async (url, method='GET', body=null, headers={}
-    ) => {
+    async (url, method='GET', body=null, headers={}) => {
       setIsLoading(true);
       const httpAbortCtrl = new AbortController();
       activeHttpRequests.current.push(httpAbortCtrl);
@@ -22,15 +21,22 @@ export const useHttpClient = () => {
         });
 
         const responseData = await response.json();
+
+        activeHttpRequests.current = activeHttpRequests.current.filter(
+          reqCtrl => reqCtrl !== httpAbortCtrl
+        );
+
         if (!response.ok) {
           throw new Error(responseData.message);
         }
 
+        setIsLoading(false);
         return responseData;
       } catch (err) {
         setError(err.message)
+        setIsLoading(false);
+        throw err;
       }
-      setIsLoading(false);
     }, []);
 
   const clearError = () => {
@@ -39,6 +45,7 @@ export const useHttpClient = () => {
 
   useEffect(() => {
     return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps
       activeHttpRequests.current.forEach(abortCtrl => abortCtrl.abort());
     };
   }, [])
