@@ -18,7 +18,7 @@ const fileUpload = multer({
     }
   }),
   fileFilter: (req, file, cb) => {
-    const isValid = !!MINE_TYPE_MAP[file.minetype];
+    const isValid = !!MINE_TYPE_MAP[file.mimetype];
     let error = isValid ? null : new Error("Invalid minetype");
     cb(error, isValid)
   }
