@@ -1,90 +1,92 @@
-import React, { useEffect, useState, useContext } from 'react'
-import { useParams, useHistory } from 'react-router-dom'
+import React, { useEffect, useState, useContext } from "react";
+import { useParams, useHistory } from "react-router-dom";
 
-import Input from '../../shared/components/FormElements/Input'
-import Button from '../../shared/components/FormElements/Button'
-import Card from '../../shared/components/UIElements/Card'
+import Input from "../../shared/components/FormElements/Input";
+import Button from "../../shared/components/FormElements/Button";
+import Card from "../../shared/components/UIElements/Card";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import {
   VALIDATOR_REQUIRE,
-  VALIDATOR_MINLENGTH
-} from '../../shared/util/validators'
-import { useForm } from '../../shared/hooks/form-hook'
-import { useHttpClient } from '../../shared/hooks/http-hook'
-import { AuthContext } from '../../shared/context/auth-context'
-import "./PlaceForm.css"
+  VALIDATOR_MINLENGTH,
+} from "../../shared/util/validators";
+import { useForm } from "../../shared/hooks/form-hook";
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import { AuthContext } from "../../shared/context/auth-context";
+import "./PlaceForm.css";
 
 const UpdatePlace = () => {
-  const auth = useContext(AuthContext)
-  const { isLoading, error, sendRequest, clearError } = useHttpClient()
-  const [loadedPlace, setLoadedPlace] = useState()
+  const auth = useContext(AuthContext);
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
+  const [loadedPlace, setLoadedPlace] = useState();
 
-  const histoty = useHistory()
-  const placeId = useParams().placeId
+  const histoty = useHistory();
+  const placeId = useParams().placeId;
 
   const [formState, inputHandler, setFormData] = useForm(
     {
       title: {
-        value: '',
-        isValid: false
+        value: "",
+        isValid: false,
       },
       description: {
-        value: '',
-        isValid: false
-      }
+        value: "",
+        isValid: false,
+      },
     },
     false
-  )
+  );
 
   useEffect(() => {
     const fetchPlace = async () => {
       try {
-        const responseData = await sendRequest(`http://localhost:5000/api/places/${placeId}`);
+        const responseData = await sendRequest(
+          `http://localhost:5000/api/places/${placeId}`
+        );
         setLoadedPlace(responseData.place);
         setFormData(
           {
             title: {
               value: responseData.place.title,
-              isvalid: true
+              isvalid: true,
             },
             description: {
               value: responseData.place.description,
-              isValid: true
-            }
+              isValid: true,
+            },
           },
           true
         );
-
       } catch (err) {}
     };
     fetchPlace();
   }, [sendRequest, placeId, setFormData]);
 
-  const placeUpdateSubmitHandler = async event => {
+  const placeUpdateSubmitHandler = async (event) => {
     event.preventDefault();
     try {
       await sendRequest(
         `http://localhost:5000/api/places/${placeId}`,
-        'PATCH',
+        "PATCH",
         JSON.stringify({
           title: formState.inputs.title.value,
-          description: formState.inputs.description.value
+          description: formState.inputs.description.value,
         }),
         {
-          'Content-Type': 'application/json'
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + auth.token,
         }
       );
-      histoty.push('/' + auth.userId + '/places');
+      histoty.push("/" + auth.userId + "/places");
     } catch (err) {}
-  }
+  };
 
   if (isLoading) {
     return (
       <div className="center">
         <LoadingSpinner />
       </div>
-    )
+    );
   }
 
   if (!loadedPlace && !error) {
@@ -94,7 +96,7 @@ const UpdatePlace = () => {
           <h2>Could not find place!</h2>
         </Card>
       </div>
-    )
+    );
   }
   return (
     <React.Fragment>
@@ -129,6 +131,6 @@ const UpdatePlace = () => {
       )}
     </React.Fragment>
   );
-}
+};
 
-export default UpdatePlace
+export default UpdatePlace;
